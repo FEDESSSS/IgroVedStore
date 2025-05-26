@@ -1,0 +1,164 @@
+﻿<Window x:Class="IgroVedStore.AddWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IgroVedStore"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        Title="Редактирование товара" Height="650" Width="800"
+        Background="#FFF5ED">
+
+    <Window.Clip>
+        <RectangleGeometry Rect="0,0,857,650" RadiusX="25" RadiusY="25"/>
+    </Window.Clip>
+
+    <Window.Resources>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="#FFE8D6"/>
+            <Setter Property="BorderBrush" Value="#E07A5F"/>
+            <Setter Property="FontFamily" Value="Comfortaa"/>
+            <Setter Property="Foreground" Value="#454545"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="TextAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBox}">
+                        <Border CornerRadius="15" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ScrollViewer x:Name="PART_ContentHost"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
+        <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
+            <Border CornerRadius="15" 
+                    Background="#FFE8D6" 
+                    BorderBrush="#E07A5F" 
+                    BorderThickness="1">
+                <Grid>
+                    <Path x:Name="Arrow" 
+                          Fill="#454545" 
+                          HorizontalAlignment="Right" 
+                          VerticalAlignment="Center"
+                          Margin="0,0,10,0"
+                          Data="M0,0 L4,4 8,0 Z"/>
+                </Grid>
+            </Border>
+        </ControlTemplate>
+
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#E07A5F"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Comfortaa"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Margin" Value="0,20,0,10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border CornerRadius="15" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style TargetType="{x:Type ComboBoxItem}">
+            <Setter Property="Background" Value="#FFE8D6"/>
+            <Setter Property="BorderBrush" Value="#E07A5F"/>
+            <Setter Property="Foreground" Value="#454545"/>
+            <Setter Property="FontFamily" Value="Comfortaa"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                        <Border CornerRadius="10" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="1"
+                                SnapsToDevicePixels="True">
+                            <ContentPresenter HorizontalAlignment="Left" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Заголовок -->
+        <StackPanel Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0,20,0,20">
+            <Label Content="Редактирование товара" FontSize="24" Foreground="#E07A5F" FontWeight="Bold" FontFamily="Comfortaa"/>
+        </StackPanel>
+
+        <!-- Кнопка закрытия -->
+        <Image x:Name="Exit" Grid.Row="0" Grid.Column="1" Source="/image/krest.png" 
+               MouseLeftButtonDown="Exit_MouseLeftButtonDown" Margin="5,10,10,0" Width="40" Height="40"/>
+
+        <!-- Основное содержимое -->
+        <ScrollViewer Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="20">
+                <!-- Изображение товара -->
+                <Border BorderBrush="#E07A5F" BorderThickness="1" CornerRadius="15" 
+                        HorizontalAlignment="Center" Margin="0,0,0,20">
+                    <Image x:Name="productImage" Width="200" Height="150" Stretch="Uniform"
+                           Source="/image/picture.png"/>
+                </Border>
+
+                <Button Content="Изменить изображение" Click="ChangeImage_Click"
+                        HorizontalAlignment="Center" Margin="0,0,0,20"/>
+
+                <TextBlock Text="Название:" FontSize="16" FontFamily="Comfortaa" Foreground="#454545"/>
+                <TextBox x:Name="txtName"/>
+
+                <TextBlock Text="Категория:" FontSize="16" FontFamily="Comfortaa" Foreground="#454545"/>
+                <ComboBox x:Name="cmbCategory" Height="40"/>
+
+                <TextBlock Text="Бренд:" FontSize="16" FontFamily="Comfortaa" Foreground="#454545"/>
+                <TextBox x:Name="txtBrand"/>
+
+                <TextBlock Text="Цена:" FontSize="16" FontFamily="Comfortaa" Foreground="#454545"/>
+                <TextBox x:Name="txtPrice"/>
+
+                <TextBlock Text="Количество:" FontSize="16" FontFamily="Comfortaa" Foreground="#454545"/>
+                <TextBox x:Name="txtQuantity"/>
+
+                <TextBlock Text="Поставщик:" FontSize="16" FontFamily="Comfortaa" Foreground="#454545"/>
+                <ComboBox x:Name="cmbSuppliers" Height="40"/>
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- Кнопки сохранения/отмены -->
+        <StackPanel Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,20">
+            <Button Content="Сохранить" x:Name="btnSave" Click="BtnSave_Click"/>
+            <Button Content="Отмена" x:Name="btnCancel" Click="BtnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

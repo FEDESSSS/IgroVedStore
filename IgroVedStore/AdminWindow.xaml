@@ -1,0 +1,171 @@
+﻿<Window x:Class="IgroVedStore.AdminWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:local="clr-namespace:IgroVedStore"
+        mc:Ignorable="d"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        WindowStartupLocation="CenterScreen"
+        Title="Список товаров" Height="600" Width="800"
+        Background="#FFF5ED">
+    <Window.Clip>
+        <RectangleGeometry Rect="0,0,857,483" RadiusX="25" RadiusY="25"/>
+    </Window.Clip>
+
+    <Window.Resources>
+        <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <local:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter"/>
+        <local:DiscountToStrikethroughConverter x:Key="DiscountToStrikethrough"/>
+
+        <Style TargetType="{x:Type ListViewItem}">
+            <Setter Property="Background" Value="#FFE8D6"/>
+            <Setter Property="BorderBrush" Value="#E07A5F"/>
+            <Setter Property="FontFamily" Value="Comfortaa"/>
+            <Setter Property="Foreground" Value="#454545"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+            <Setter Property="MinHeight" Value="80"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasHighDiscount}" Value="True">
+                    <Setter Property="Background" Value="#7fff00"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="#FFE8D6"/>
+            <Setter Property="BorderBrush" Value="#E07A5F"/>
+            <Setter Property="FontFamily" Value="Comfortaa"/>
+            <Setter Property="Foreground" Value="#454545"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="TextAlignment" Value="Center"/>
+        </Style>
+
+        <Style x:Key="StrikethroughPriceStyle" TargetType="TextBlock">
+            <Setter Property="TextDecorations" Value="Strikethrough"/>
+            <Setter Property="Foreground" Value="Gray"/>
+        </Style>
+
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#E07A5F"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Comfortaa"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border CornerRadius="15" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <!-- Иконка "Назад" в левом верхнем углу -->
+        <Image x:Name="Exit" Source="/image/backwards.png" 
+               Width="40" Height="40" Margin="20,20,0,0"
+               HorizontalAlignment="Left" VerticalAlignment="Top"
+               MouseLeftButtonDown="exit_MouseDown"/>
+
+        <!-- Иконка "Обновить" рядом с кнопкой "Назад" -->
+        <Image x:Name="Refresh" Source="/image/refresh.png" 
+               Width="40" Height="40" Margin="70,20,0,0"
+               HorizontalAlignment="Left" VerticalAlignment="Top"
+               MouseLeftButtonDown="Refresh_MouseLeftButtonDown"/>
+
+        <!-- Иконка "Корзина" в правом нижнем углу -->
+        <Image x:Name="Cart" Source="/image/cart.png" 
+               Width="40" Height="40" Margin="0,0,33,127"
+               HorizontalAlignment="Right" VerticalAlignment="Bottom"
+               MouseLeftButtonDown="Cart_MouseLeftButtonDown"/>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Левая панель с товарами -->
+            <Grid Grid.Column="0" Margin="20,70,20,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,10">
+                    <TextBlock Text="Сортировка:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <ComboBox x:Name="sortComboBox" Width="150" Margin="0,0,10,0" SelectionChanged="SortComboBox_SelectionChanged">
+                        <ComboBoxItem Content="По возрастанию цены"/>
+                        <ComboBoxItem Content="По убыванию цены"/>
+                    </ComboBox>
+
+                    <TextBlock Text="Фильтр по бренду:" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                    <ComboBox x:Name="brandFilterComboBox" Width="150" SelectionChanged="BrandFilterComboBox_SelectionChanged"/>
+                </StackPanel>
+
+                <ListView x:Name="productsListView" Grid.Row="1" ItemsSource="{Binding Products}" Margin="0,0,0,116"
+                          MouseDoubleClick="productsListView_MouseDoubleClick">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Изображение" Width="120">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Image Source="{Binding Image}" Width="100" Height="100" Stretch="Uniform"/>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Название" DisplayMemberBinding="{Binding ProductName}" Width="150"/>
+                            <GridViewColumn Header="Бренд" DisplayMemberBinding="{Binding Brand}" Width="100"/>
+                            <GridViewColumn Header="Цена" Width="150">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Price, StringFormat={}{0:C2}}" 
+                                                       Style="{StaticResource StrikethroughPriceStyle}"
+                                                       Visibility="{Binding HasDiscount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                            <TextBlock Text="{Binding Price, StringFormat={}{0:C2}}" 
+                                                       Visibility="{Binding HasDiscount, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                            <TextBlock Text="{Binding FinalPrice, StringFormat={}{0:C2}}" 
+                                                       Foreground="Red" Margin="5,0,0,0"
+                                                       Visibility="{Binding HasDiscount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Скидка" DisplayMemberBinding="{Binding DiscountPercentage, StringFormat={}{0}%}" Width="80"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </Grid>
+
+            <!-- Правая панель с кнопками -->
+            <Grid Grid.Column="1" Margin="0,70,20,60" Width="220">
+                <StackPanel VerticalAlignment="Center">
+                    <Button Content="Добавить товар" x:Name="addButton" 
+                            Click="addButton_Click"/>
+
+                    <Button Content="Редактировать" x:Name="editButton" 
+                            Click="editButton_Click"/>
+
+                    <Button Content="Анализ заказов" x:Name="orderButton" 
+                            Click="orderButton_Click"/>
+
+                    <Button Content="Удалить" x:Name="deleteButton" 
+                            Click="deleteButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

@@ -1,0 +1,124 @@
+﻿<Window x:Class="IgroVedStore.CartWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:IgroVedStore"
+        mc:Ignorable="d"
+        Title="Корзина" Height="600" Width="800"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="#FFF5ED">
+
+    <Window.Clip>
+        <RectangleGeometry Rect="0,0,800,600" RadiusX="25" RadiusY="25"/>
+    </Window.Clip>
+
+    <Window.Resources>
+        <local:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <local:DiscountToStrikethroughConverter x:Key="DiscountToStrikethrough"/>
+
+        <Style TargetType="{x:Type ListViewItem}">
+            <Setter Property="Background" Value="#FFE8D6"/>
+            <Setter Property="BorderBrush" Value="#E07A5F"/>
+            <Setter Property="FontFamily" Value="Comfortaa"/>
+            <Setter Property="Foreground" Value="#454545"/>
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="Margin" Value="0,10,0,0"/>
+            <Setter Property="MinHeight" Value="80"/>
+        </Style>
+
+        <Style TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="#E07A5F"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontFamily" Value="Comfortaa"/>
+            <Setter Property="Width" Value="120"/>
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border CornerRadius="15" 
+                                Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20">
+            <TextBlock Text="Корзина" FontSize="24" FontWeight="Bold" Foreground="#E07A5F"/>
+            <Image Source="/image/cart.png" Width="32" Height="32" Margin="10,0"/>
+        </StackPanel>
+
+        <ListView Grid.Row="1" x:Name="cartItemsListView" Margin="20">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Image Grid.Column="0" Source="{Binding Product.Image}" 
+                               Width="80" Height="80" Margin="5"/>
+
+                        <StackPanel Grid.Column="1" Margin="10,0">
+                            <TextBlock Text="{Binding Product.ProductName}" FontSize="18" FontWeight="Bold"/>
+                            <TextBlock Text="{Binding Product.Brand}" FontSize="16"/>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Product.Price, StringFormat={}{0:C2}}" 
+                                           TextDecorations="{Binding HasDiscount, Converter={StaticResource DiscountToStrikethrough}}"
+                                           Margin="0,0,5,0"/>
+                                <TextBlock Text="{Binding DiscountedPrice, StringFormat={}{0:C2}}" 
+                                           Foreground="Red"
+                                           Visibility="{Binding HasDiscount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                            </StackPanel>
+                            <TextBlock Text="{Binding DiscountPercentage, StringFormat=Скидка: {0}%}" 
+                                       Foreground="Green"
+                                       Visibility="{Binding HasDiscount, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Button Content="-" Width="30" Click="DecreaseQuantity_Click"
+                                    Tag="{Binding Product.ProductID}"/>
+                            <TextBlock Text="{Binding Quantity}" Margin="10,0" 
+                                       FontSize="16" VerticalAlignment="Center"/>
+                            <Button Content="+" Width="30" Click="IncreaseQuantity_Click"
+                                    Tag="{Binding Product.ProductID}"/>
+                        </StackPanel>
+
+                        <Button Grid.Column="3" Content="Удалить" Margin="10,0" 
+                                Click="RemoveItem_Click" Tag="{Binding Product.ProductID}"/>
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+
+        <StackPanel Grid.Row="2" Orientation="Vertical" HorizontalAlignment="Right" Margin="20">
+            <TextBlock Text="{Binding DiscountAmount, StringFormat='Скидка: {0:C}'}" 
+                       FontSize="16" Foreground="Green" HorizontalAlignment="Right"/>
+            <TextBlock Text="{Binding TotalWithoutDiscount, StringFormat='Сумма без скидки: {0:C}'}" 
+                       FontSize="16" HorizontalAlignment="Right"/>
+            <TextBlock Text="{Binding TotalPrice, StringFormat='Итого: {0:C}'}" 
+                       FontSize="18" FontWeight="Bold" HorizontalAlignment="Right"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Оформить заказ" Width="150" Click="Checkout_Click"/>
+                <Button Content="Закрыть" Width="100" Margin="10,0" Click="Close_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
